@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    
+
+</h:head>
+
+<h:body>
+		
+		<script type="text/javascript" >
+    
+    function limpa_formulário_cep() {
+            //Limpa valores do formulário de cep.
+            document.getElementById('form:rua').value=("");
+            document.getElementById('form:bairro').value=("");
+            document.getElementById('form:cidade').value=("");
+            document.getElementById('form:uf').value=("");
+            document.getElementById('form:ibge').value=("");
+    }
+
+    function meu_callback(conteudo) {
+        if (!("erro" in conteudo)) {
+            //Atualiza os campos com os valores.
+            document.getElementById('form:rua').value=(conteudo.logradouro);
+            document.getElementById('form:bairro').value=(conteudo.bairro);
+            document.getElementById('form:cidade').value=(conteudo.localidade);
+            document.getElementById('form:uf').value=(conteudo.uf);
+            document.getElementById('form:ibge').value=(conteudo.ibge);
+        } //end if.
+        else {
+            //CEP não Encontrado.
+            limpa_formulário_cep();
+            alert("CEP não encontrado.");
+        }
+    }
+        
+    function pesquisacep(valor) {
+
+        //Nova variável "cep" somente com dígitos.
+        var cep = valor.replace(/\D/g, '');
+
+        //Verifica se campo cep possui valor informado.
+        if (cep != "") {
+
+            //Expressão regular para validar o CEP.
+            var validacep = /^[0-9]{8}$/;
+
+            //Valida o formato do CEP.
+            if(validacep.test(cep)) {
+
+               
+                //Cria um elemento javascript.
+                var script = document.createElement('script');
+
+                //Sincroniza com o callback.
+                script.src = 'https://viacep.com.br/ws/'+ cep + '/json/?callback=meu_callback';
+
+                //Insere script no documento e carrega o conteúdo.
+                document.body.appendChild(script);
+
+            } //end if.
+            else {
+                //cep é inválido.
+                limpa_formulário_cep();
+                alert("Formato de CEP inválido.");
+            }
+        } //end if.
+        else {
+            //cep sem valor, limpa formulário.
+            limpa_formulário_cep();
+        }
+    };
+
+    </script>    
+		
+		<p:ajaxStatus style="display:block;margin-bottom:2em;height:24px;">
+    <f:facet name="default">
+        <h:outputText value="" />
+    </f:facet>
+ 
+ 
+    <f:facet name="complete">
+        <h:outputText value="" />
+    </f:facet>
+</p:ajaxStatus>
+ 
+<p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" />
+             
+<p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+     <p:graphicImage name="/images/loader.gif" />
+</p:dialog>
+ 
+<h:form style="text-align:center;" id="form">
+
+<h:panelGrid columns="3" cellpadding="5">
+ 
+     
+    <p:commandButton value="+ Novo" type="button" onclick="PF('dlg3').show();" style="margin-left:100px;" /> 
+</h:panelGrid>
+
+<p:dialog header="IncluirEtec" widgetVar="dlg3" id="dlg3"
+showEffect="explode" hideEffect="bounce" height="500" width="500">
+   <p:panelGrid columns="2" id="pngInsert">
+    <f:facet name="header">
+        <p:graphicImage name="demo/images/misc/kobe.png" />
+    </f:facet>
+     
+    <h:outputText value="Name:" />
+    <h:inputText />
+    
+    <h:outputText value="cep:" />
+    <p:inputText id="cep"  onblur="pesquisacep(this.value);"/>
+
+	  <h:outputText value="Rua:"  />
+    <h:inputText id="rua" />
+    
+      <h:outputText value="bairro:" />
+    <h:inputText id="bairro" />
+    
+      <h:outputText value="Cidade:" />
+    <h:inputText id="cidade" />
+    
+      <h:outputText value="uf:" />
+    <h:inputText id="uf" />
+    
+      <h:outputText value="ibge:" />
+    <h:inputText id="ibge"  />
+    
+   
+   <p:growl id="growl" life="2000" />
+     
+ 
+  
+ 
+  
+
+
+</p:panelGrid>
+	
+<p:growl id="message" showDetail="true" />
+     
+ 	<p:commandButton value="Confirmar"
+						actionListener="#{productMB.onSave()}" />
+					<p:commandButton value="Cancelar"
+						onclick="PF('insertdlg').hide();" />	
+	
+</p:dialog>
+
+
+
+<br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br>
+    <p:commandButton value="Loader"  timeout="20" style=" border: 0;
+  padding: 10px;
+  width: 200px;
+  height: 50px;
+  display: inline-block;
+  margin: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all .3s ease-out;
+  transition-property: all;
+  transition-duration: 0.3s;
+  transition-timing-function: ease-out;
+  text-align: justify;"/>
+  
+  
+      <p:growl id="growl" showdetails="true" life="5000" />
+ 
+</h:form>
+</h:body>
+</html>
